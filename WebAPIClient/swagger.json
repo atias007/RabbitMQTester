@@ -1,0 +1,527 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CustomsCloud.CRP.DealFile.WebApi",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/CommercialImports/GetComerccialImport": {
+      "post": {
+        "tags": [
+          "CommercialImports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonIdObj"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonIdObj"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonIdObj"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommercialImportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CommercialImports/IsAlive": {
+      "get": {
+        "tags": [
+          "CommercialImports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CommercialImports": {
+      "get": {
+        "tags": [
+          "CommercialImports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApplicationInfo": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "serverDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "machineName": {
+            "type": "string",
+            "nullable": true
+          },
+          "domain": {
+            "type": "string",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "webRootPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentRootPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "osVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "is64BitOperatingSystem": {
+            "type": "boolean"
+          },
+          "is64BitProcess": {
+            "type": "boolean"
+          },
+          "processorCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customsDBConnectionString": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CatalogItemObj": {
+        "type": "object",
+        "properties": {
+          "catalogItemName": {
+            "type": "string",
+            "nullable": true
+          },
+          "catalogItemDesc": {
+            "type": "string",
+            "nullable": true
+          },
+          "catalogItemId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "catalogItemComment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommercialImportResponse": {
+        "type": "object",
+        "properties": {
+          "userDataList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDataObj"
+            },
+            "nullable": true
+          },
+          "errorCode": {
+            "$ref": "#/components/schemas/ErrorCodeObj"
+          },
+          "serviceCatalogList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceCatalogObj"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CtaObj": {
+        "type": "object",
+        "properties": {
+          "ctaTitleSentenceCode": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "ctaTitleSentenceCodePlaceHoldersValues": {
+            "type": "string",
+            "nullable": true
+          },
+          "linkId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "presentationType": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "method": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "ctaKeyValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyValueObj"
+            },
+            "nullable": true
+          },
+          "ctaObjSourceId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataObj": {
+        "type": "object",
+        "properties": {
+          "dataId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "titleSentenceCode": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "titleSentencePlaceHoldersValues": {
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionDataList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DescriptionDataObj"
+            },
+            "nullable": true
+          },
+          "urgent": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "dataDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DescriptionDataObj": {
+        "type": "object",
+        "properties": {
+          "descriptionSentenceCode": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "descriptionSentencePlaceHoldersValues": {
+            "type": "string",
+            "nullable": true
+          },
+          "urgent": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "ctaPointerList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "filesPointerList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "descriptionDataList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DescriptionDataObj"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorCodeObj": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "errorExtraInfo": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileIdObj": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "fileIdValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyValueObj"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileObj": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "$ref": "#/components/schemas/FileIdObj"
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileType": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "fileSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fileTitleSentenceCode": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "fileTitleSentenceCodePlaceHoldersValues": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "fileCreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "fileTags": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "nullable": true
+          },
+          "fileObjSourceId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "KeyValueObj": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PersonIdObj": {
+        "type": "object",
+        "properties": {
+          "idNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "personRelationship": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "nullable": true
+          },
+          "personInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonInfo"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PersonInfo": {
+        "type": "object",
+        "properties": {
+          "personalInformationId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "personalInformationIsTrue": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ServiceCatalogObj": {
+        "type": "object",
+        "properties": {
+          "catalogTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "catalogDesc": {
+            "type": "string",
+            "nullable": true
+          },
+          "catalogId": {
+            "type": "string",
+            "nullable": true
+          },
+          "catalogItemList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogItemObj"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserDataObj": {
+        "type": "object",
+        "properties": {
+          "idNum": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataObj"
+            },
+            "nullable": true
+          },
+          "idErrorCode": {
+            "$ref": "#/components/schemas/ErrorCodeObj"
+          },
+          "person360Obj": {
+            "type": "string",
+            "nullable": true
+          },
+          "ctaList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CtaObj"
+            },
+            "nullable": true
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileObj"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

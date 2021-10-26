@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
+﻿using CustomsCloud.InfrastructureCore.Queue;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RabbitMQClient
@@ -17,9 +18,45 @@ namespace RabbitMQClient
         private static DateTime? startDate;
         private static DateTime endDate;
         private static int _passTime = 0;
+        private static readonly List<int> _priority = new();
+
+        private static void Handler(MessageEventArgs args)
+        {
+            var t = Task.Run(() =>
+            {
+                if (startDate == null) { startDate = DateTime.Now; }
+                var message = JsonConvert.DeserializeObject<MyMessage>(args.Body);
+                _priority.Add(message.Priority);
+
+                var time = new Random().Next(1, 10);
+                _passTime += time;
+                Console.WriteLine($" [x] {message.DateCreated:HH:mm:ss} | ({message.Title}), wait {time} sec");
+
+                Task.Delay(time * 1000).Wait();
+                args.Acknowledge();
+            })
+            .ContinueWith(t =>
+            {
+                endDate = DateTime.Now;
+            });
+            AddTask(t);
+        }
 
         private static void Main(string[] args)
         {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            //setup our DI
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(c => c.AddConsole())
+                .AddSingleton(typeof(IQueueUtil), typeof(RabbitQueueUtil))
+                .AddSingleton<IConfiguration>(config)
+                .BuildServiceProvider();
+
+            var util = serviceProvider.GetService(typeof(IQueueUtil)) as IQueueUtil;
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("-----------------------------------------");
             Console.WriteLine("- Client");
@@ -28,59 +65,40 @@ namespace RabbitMQClient
 
             ConsoleKeyInfo x = new('0', ConsoleKey.Escape, false, false, false);
 
-            var factory = new ConnectionFactory() { HostName = "localhost", AutomaticRecoveryEnabled = true, NetworkRecoveryInterval = TimeSpan.FromSeconds(10) };
-            var connection = factory.CreateConnection();
-            var channel = connection.CreateModel();
+            var count = util.GetCount("TestQueue");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{count} messages in queue");
+            Console.ForegroundColor = ConsoleColor.White;
 
-            var dict = new Dictionary<string, object>(new[] {
-                new KeyValuePair<string, object>("x-max-priority", 10) ,
-                new KeyValuePair<string, object>("x-dead-letter-exchange","dlx_pq_exchange")
-                }
-            );
+            if (count != 63)
+            {
+                util.Purge("TestQueue");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Purge Queue --> run publisher");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
 
-            channel.QueueDeclare(queue: "priority_queue", durable: true, exclusive: false, autoDelete: false, arguments: dict);
-            channel.BasicQos(0, 5, false);
-            var consumer = new EventingBasicConsumer(channel);
+            Console.WriteLine();
+
+            util.Receive(queueName: "TestQueue", maxHandleItems: 5, responseAction: Handler);
 
             Console.WriteLine(" [*] Waiting for messages.");
-            Task.Delay(1000).Wait();
-
-            consumer.Received += (sender, ea) =>
-            {
-                if (startDate == null) { startDate = DateTime.Now; }
-                var t = Task.Run(() =>
-                {
-                    var body = ea.Body.ToArray();
-                    var json = Encoding.UTF8.GetString(body);
-                    var message = JsonConvert.DeserializeObject<MyMessage>(json);
-
-                    var time = (DateTime.Now.Millisecond % 10) + 1;
-                    _passTime += time;
-                    Console.WriteLine($" [x] {message.DateCreated:HHmmss.fff} | ({message.Title}), wait {time} sec");
-
-                    Task.Delay(time * 1000).Wait();
-                    ((EventingBasicConsumer)sender).Model.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-                })
-                .ContinueWith(t =>
-                {
-                    endDate = DateTime.Now;
-                });
-                AddTask(t);
-            };
-            channel.BasicConsume(queue: "priority_queue", autoAck: false, consumer: consumer);
 
             while (x.KeyChar != 'x')
             {
                 x = Console.ReadKey(true);
             }
 
-            consumer.ConsumerTags.ToList().ForEach(t => channel.BasicCancel(t));
+            util.CancelConsume("TestQueue");
+            Console.WriteLine();
+            Console.WriteLine();
+
             var y = GetRunningTasks();
             while (y > 0)
             {
                 Task.Delay(100).Wait();
-                Console.WriteLine($"{y}");
                 Console.CursorTop -= 1;
+                Console.WriteLine($"wait for {y} tasks to complete...");
                 y = GetRunningTasks();
             }
 
@@ -99,13 +117,27 @@ namespace RabbitMQClient
             {
                 Console.ForegroundColor = ConsoleColor.Red;
             }
-
             Console.WriteLine($"Time rate: {ratio:N2}");
 
-            channel.Dispose();
-            connection.Dispose();
+            var counter = _priority.Take(10).Count(a => a == 5);
+            if (counter == 10)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+            Console.WriteLine($"Priority high counter: {counter}");
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine(" Press [enter] to exit.");
             Console.ReadLine();
+
+            //await host.RunAsync();
         }
 
         private static void AddTask(Task t)
@@ -121,7 +153,7 @@ namespace RabbitMQClient
         {
             lock (Locker)
             {
-                return _waits.Where(t => t.Status == TaskStatus.Running || t.Status == TaskStatus.WaitingToRun).Count();
+                return _waits.Where(t => t.Status != TaskStatus.RanToCompletion).Count();
             }
         }
     }
