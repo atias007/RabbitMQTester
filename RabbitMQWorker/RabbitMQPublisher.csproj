@@ -6,14 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CustomsCloud.InfrastructureCore.Queue" Version="1.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="R:\CustomsCloud\Infrastructure\CustomsCloud.InfrastructureCore.Queue\CustomsCloud.InfrastructureCore.Queue.csproj" />
   </ItemGroup>
 
   <ItemGroup>
