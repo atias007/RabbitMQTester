@@ -4,12 +4,12 @@ namespace RabbitMQClient
 {
     public static class BaseUtil
     {
-        public static void WriteTitle(string module)
+        public static void WriteTitle(string module, string queueName)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("-----------------------------------------");
-            Console.WriteLine($"- {module}");
+            Console.WriteLine($"- {module}   ({queueName})");
             Console.WriteLine("-----------------------------------------");
             Console.ForegroundColor = ConsoleColor.White;
         }

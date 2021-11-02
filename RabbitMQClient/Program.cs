@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RabbitMQScom;
 using System;
 
 namespace RabbitMQClient
@@ -41,10 +42,11 @@ namespace RabbitMQClient
             Console.Clear();
             Console.ResetColor();
             Console.WriteLine("-----------------------");
-            Console.WriteLine("1) Publish messages");
-            Console.WriteLine("2) Purge queue");
-            Console.WriteLine("3) Consume Messages");
-            Console.WriteLine("4) Count Messages");
+            Console.WriteLine("1) Sanity");
+            Console.WriteLine("2) Publish messages");
+            Console.WriteLine("3) Purge queue");
+            Console.WriteLine("4) Consume Messages");
+            Console.WriteLine("5) Count Messages");
             Console.WriteLine("-----------------------");
             Console.WriteLine("9) Exit");
             Console.Write("\r\nSelect an option: ");
@@ -52,18 +54,22 @@ namespace RabbitMQClient
             switch (Console.ReadLine())
             {
                 case "1":
-                    Publisher.Run(_queueUtil, _config);
+                    Sanity.Run();
                     return true;
 
                 case "2":
-                    General.Purge(_queueUtil, _config);
+                    Publisher.Run(_queueUtil, _config);
                     return true;
 
                 case "3":
-                    Listener.Run(_queueUtil, _config);
+                    General.Purge(_queueUtil, _config);
                     return true;
 
                 case "4":
+                    Listener.Run(_queueUtil, _config);
+                    return true;
+
+                case "5":
                     General.Count(_queueUtil, _config);
                     return true;
 

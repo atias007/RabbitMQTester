@@ -18,7 +18,7 @@ namespace RabbitMQClient
 
         public static void Run(IQueueUtil util, Config config)
         {
-            BaseUtil.WriteTitle("Listener");
+            BaseUtil.WriteTitle("Listener", config.QueueName);
 
             ConsoleKeyInfo x = new('0', ConsoleKey.Escape, false, false, false);
 
@@ -26,14 +26,6 @@ namespace RabbitMQClient
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"{count} messages in queue");
             Console.ForegroundColor = ConsoleColor.White;
-
-            if (count != 63)
-            {
-                util.Purge(config.QueueName);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Purge Queue --> run publisher");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
 
             Console.WriteLine();
 

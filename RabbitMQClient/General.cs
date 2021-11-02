@@ -7,7 +7,7 @@ namespace RabbitMQClient
     {
         public static void Purge(IQueueUtil util, Config config)
         {
-            BaseUtil.WriteTitle("Purge");
+            BaseUtil.WriteTitle("Purge", config.QueueName);
 
             WriteCount(util, config);
             util.Purge(config.QueueName);
@@ -17,7 +17,7 @@ namespace RabbitMQClient
 
         public static void Count(IQueueUtil util, Config config)
         {
-            BaseUtil.WriteTitle("Count");
+            BaseUtil.WriteTitle("Count", config.QueueName);
             WriteCount(util, config);
             BaseUtil.WriteFooter();
         }
