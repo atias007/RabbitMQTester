@@ -3,22 +3,22 @@
     public Arguments arguments { get; set; }
     public bool auto_delete { get; set; }
     public Backing_Queue_Status backing_queue_status { get; set; }
-    public int consumer_capacity { get; set; }
-    public int consumer_utilisation { get; set; }
-    public int consumers { get; set; }
+    public int? consumer_capacity { get; set; }
+    public int? consumer_utilisation { get; set; }
+    public int? consumers { get; set; }
     public bool durable { get; set; }
     public Effective_Policy_Definition effective_policy_definition { get; set; }
     public bool exclusive { get; set; }
     public object exclusive_consumer_tag { get; set; }
     public object head_message_timestamp { get; set; }
     public string idle_since { get; set; }
-    public int memory { get; set; }
-    public int message_bytes { get; set; }
-    public int message_bytes_paged_out { get; set; }
-    public int message_bytes_persistent { get; set; }
-    public int message_bytes_ram { get; set; }
-    public int message_bytes_ready { get; set; }
-    public int message_bytes_unacknowledged { get; set; }
+    public int? memory { get; set; }
+    public int? message_bytes { get; set; }
+    public int? message_bytes_paged_out { get; set; }
+    public int? message_bytes_persistent { get; set; }
+    public int? message_bytes_ram { get; set; }
+    public int? message_bytes_ready { get; set; }
+    public int? message_bytes_unacknowledged { get; set; }
     public Message_Stats message_stats { get; set; }
     public int messages { get; set; }
     public Messages_Details messages_details { get; set; }

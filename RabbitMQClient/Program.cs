@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RabbitMQScom;
+using Spectre.Console;
 using System;
 
 namespace RabbitMQClient
@@ -10,16 +10,41 @@ namespace RabbitMQClient
     // https://blog.devgenius.io/rabbitmq-with-docker-on-windows-in-30-minutes-172e88bb0808
     internal class Program
     {
-        private static IQueueUtil _queueUtil;
-        private static Config _config = new Config();
-
         private static void Main(string[] args)
+        {
+            try
+            {
+                var tuple = Start();
+                bool showMenu = true;
+                while (showMenu)
+                {
+                    try
+                    {
+                        showMenu = MainMenu(tuple);
+                    }
+                    catch (Exception ex)
+                    {
+                        AnsiConsole.WriteException(ex);
+                        BaseUtil.WriteFooter();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.WriteException(ex);
+            }
+
+            BaseUtil.WriteFooter();
+        }
+
+        private static (IQueueUtil, AppSettings) Start()
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            config.GetSection("Config").Bind(_config);
+            var appSettings = new AppSettings();
+            config.Bind(appSettings);
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -28,17 +53,15 @@ namespace RabbitMQClient
                 .AddSingleton<IConfiguration>(config)
                 .BuildServiceProvider();
 
-            _queueUtil = serviceProvider.GetService(typeof(IQueueUtil)) as IQueueUtil;
-
-            bool showMenu = true;
-            while (showMenu)
-            {
-                showMenu = MainMenu();
-            }
+            var queueUtil = serviceProvider.GetService(typeof(IQueueUtil)) as IQueueUtil;
+            return new(queueUtil, appSettings);
         }
 
-        private static bool MainMenu()
+        private static bool MainMenu((IQueueUtil, AppSettings) tuple)
         {
+            var util = tuple.Item1;
+            var settings = tuple.Item2;
+
             Console.Clear();
             Console.ResetColor();
             Console.WriteLine("-----------------------");
@@ -54,23 +77,23 @@ namespace RabbitMQClient
             switch (Console.ReadLine())
             {
                 case "1":
-                    Sanity.Run();
+                    Sanity.Run(settings).Wait();
                     return true;
 
                 case "2":
-                    Publisher.Run(_queueUtil, _config);
+                    Publisher.Run(util, settings.Config);
                     return true;
 
                 case "3":
-                    General.Purge(_queueUtil, _config);
+                    General.Purge(util, settings.Config);
                     return true;
 
                 case "4":
-                    Listener.Run(_queueUtil, _config);
+                    Listener.Run(util, settings.Config);
                     return true;
 
                 case "5":
-                    General.Count(_queueUtil, _config);
+                    General.Count(util, settings.Config);
                     return true;
 
                 case "9":

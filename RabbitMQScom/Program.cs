@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Spectre.Console;
+using System.Threading.Tasks;
 
 namespace RabbitMQScom
 {
@@ -6,7 +7,14 @@ namespace RabbitMQScom
     {
         private static async Task Main(string[] args)
         {
-            await Tester.Run();
+            try
+            {
+                await Tester.Run();
+            }
+            catch (System.Exception ex)
+            {
+                AnsiConsole.WriteException(ex);
+            }
         }
     }
 }
