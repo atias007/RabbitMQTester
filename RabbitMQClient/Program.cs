@@ -66,10 +66,11 @@ namespace RabbitMQClient
             Console.ResetColor();
             Console.WriteLine("-----------------------");
             Console.WriteLine("1) Sanity");
-            Console.WriteLine("2) Publish messages");
-            Console.WriteLine("3) Purge queue");
-            Console.WriteLine("4) Consume Messages");
-            Console.WriteLine("5) Count Messages");
+            Console.WriteLine("2) Test Connections");
+            Console.WriteLine("3) Publish messages");
+            Console.WriteLine("4) Purge queue");
+            Console.WriteLine("5) Consume Messages");
+            Console.WriteLine("6) Count Messages");
             Console.WriteLine("-----------------------");
             Console.WriteLine("9) Exit");
             Console.Write("\r\nSelect an option: ");
@@ -81,18 +82,22 @@ namespace RabbitMQClient
                     return true;
 
                 case "2":
-                    Publisher.Run(util, settings.Config);
+                    Sanity.TestConnections(settings).Wait();
                     return true;
 
                 case "3":
-                    General.Purge(util, settings.Config);
+                    Publisher.Run(util, settings.Config);
                     return true;
 
                 case "4":
-                    Listener.Run(util, settings.Config);
+                    General.Purge(util, settings.Config);
                     return true;
 
                 case "5":
+                    Listener.Run(util, settings.Config);
+                    return true;
+
+                case "6":
                     General.Count(util, settings.Config);
                     return true;
 
