@@ -14,6 +14,7 @@ namespace RabbitMQClient
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        // xxxxxxxxxxxxxxxxx
         public static void WriteFooter()
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -22,11 +23,6 @@ namespace RabbitMQClient
             Console.WriteLine(" Press [enter] to exit.");
             Console.ResetColor();
             Console.ReadLine();
-        }
-
-        public static string SayHello()
-        {
-            return "Hello";
         }
     }
 }
