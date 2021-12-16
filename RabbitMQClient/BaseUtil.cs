@@ -23,5 +23,10 @@ namespace RabbitMQClient
             Console.ResetColor();
             Console.ReadLine();
         }
+
+        public static string SayHello()
+        {
+            return "Hello";
+        }
     }
 }
